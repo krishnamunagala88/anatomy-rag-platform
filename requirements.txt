@@ -1,0 +1,32 @@
+pdfplumber==0.11.4
+pypdf==5.0.1
+# chromadb pinned to a MINIMUM, not an exact version: chromadb<1.0 hard-pins
+# numpy<2.0, which has NO wheel for Python 3.13 at all (numpy only added
+# 3.13 support in 2.1.0) -- this is a confirmed, unfixable conflict on
+# Python 3.13, not something reordering installs can solve. chromadb 1.x+
+# dropped that old numpy cap. Verified: your existing ingest.py/
+# load_to_chroma.py code runs unchanged against chromadb 1.5.9 (add, get,
+# update, delete, upsert-by-diff all behave identically to 0.5.5).
+chromadb>=1.0.0
+tiktoken>=0.8.0
+
+# --- RAGAS evaluation stage ---
+groq==0.37.1
+python-dotenv==1.2.2
+ragas==0.4.3
+instructor>=1.17.0
+openai>=3.0.0
+# NOTE: deliberately NOT using sentence-transformers here -- it pulls in a
+# full torch+CUDA stack (several GB) just to compute embeddings for eval.
+# run_ragas_eval.py instead reuses ChromaDB's already-installed lightweight
+# onnxruntime-based MiniLM model (same one load_to_chroma.py already
+# downloaded and cached) via a small custom wrapper class -- no new heavy
+# dependency needed.
+# Known bug: ragas==0.4.3 hard-imports a removed langchain-community class
+# (ChatVertexAI) at module load time, breaking `import ragas` entirely on
+# any langchain-community>=0.4.2. This is unrelated to Groq/OpenAI/Anthropic
+# usage -- confirmed upstream issue. Pinned EXACTLY (not a range) because a
+# loose "<0.4.2" range can send pip's resolver backtracking through very old
+# langchain releases looking for a combination that satisfies everything --
+# this exact version is verified to install cleanly with everything else here.
+langchain-community==0.4.1

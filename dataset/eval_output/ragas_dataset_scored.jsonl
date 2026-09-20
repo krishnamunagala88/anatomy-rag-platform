@@ -1,0 +1,15 @@
+{"question": "What is circumduction?", "faithfulness": 1.0, "answer_relevancy": 1.0, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What is the difference between flexion and extension at the neck?", "faithfulness": 1.0, "answer_relevancy": 0.988, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What does supination mean?", "faithfulness": 1.0, "answer_relevancy": 0.964, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What is the anatomical position?", "faithfulness": 0.714, "answer_relevancy": 1.0, "context_precision_without_reference": 0.5, "context_recall": 1.0}
+{"question": "Define abduction and adduction of a limb.", "faithfulness": 1.0, "answer_relevancy": 0.788, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What is a synovial joint?", "faithfulness": 1.0, "answer_relevancy": 1.0, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What are the main types of muscle based on shape?", "faithfulness": 0.9, "answer_relevancy": 0.869, "context_precision_without_reference": 0.5, "context_recall": 0.0}
+{"question": "What is the function of cartilage compared to bone?", "faithfulness": 0.7, "answer_relevancy": 0.865, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What is meant by the term 'proximal' in anatomy?", "faithfulness": 0.6, "answer_relevancy": 0.98, "context_precision_without_reference": 0.833, "context_recall": 1.0}
+{"question": "What is haemorrhage?", "faithfulness": 1.0, "answer_relevancy": 1.0, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What movements are possible in the trunk?", "faithfulness": 1.0, "answer_relevancy": 0.942, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What does the term 'ulcer' mean in clinical anatomy?", "faithfulness": 0.333, "answer_relevancy": 0.95, "context_precision_without_reference": 0.833, "context_recall": 1.0}
+{"question": "How does the structure of a synovial joint make movements like flexion and circumduction possible?", "faithfulness": 0.812, "answer_relevancy": 0.902, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What is the difference between pronation and supination?", "faithfulness": 1.0, "answer_relevancy": 1.0, "context_precision_without_reference": 1.0, "context_recall": 1.0}
+{"question": "What are the subdivisions of anatomy as a subject?", "faithfulness": 1.0, "answer_relevancy": 0.868, "context_precision_without_reference": 1.0, "context_recall": 1.0}
