@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import chromadb
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -64,18 +65,20 @@ def print_retrieved_chunks(context_docs: list[str]) -> None:
 
 
 def run_orchestrator(query: str = "what is circumduction", k: int = 3) -> str:
-    """Load Chroma data, retrieve relevant chunks, build a prompt, and call retrival.generate."""
-    # 1) Load chunks into Chroma collection
-    load_to_chroma.load_to_chroma(
-        JSONL_PATH,
-        CHROMA_DIR,
-        collection_name=COLLECTION_NAME,
-        document_id=DOCUMENT_ID,
-    )
+    """Retrieve relevant chunks and generate an answer.
 
-    # 2) Query the collection for the closest text chunks
+    The collection must be indexed separately with load_to_chroma.py. Querying
+    should not re-scan or re-embed the source JSONL for every UI request.
+    """
+    # Query the already-indexed collection for the closest text chunks.
     client = chromadb.PersistentClient(path=CHROMA_DIR)
-    collection = client.get_collection(COLLECTION_NAME)
+    embedding_fn = SentenceTransformerEmbeddingFunction(
+        model_name=load_to_chroma.EMBEDDING_MODEL
+    )
+    collection = client.get_collection(
+        COLLECTION_NAME,
+        embedding_function=embedding_fn,
+    )
     query_results = collection.query(query_texts=[query], n_results=k)
 
     docs = query_results.get("documents", [[]])[0]

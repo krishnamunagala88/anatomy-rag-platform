@@ -1,10 +1,18 @@
 """
 Load chunks.jsonl (produced by ingest.py) into a persistent ChromaDB collection.
 
-Uses ChromaDB's default embedding function (all-MiniLM-L6-v2, run locally via
-onnxruntime, downloaded automatically on first run) -- no external API key
-needed. Swap in OpenAIEmbeddingFunction / CohereEmbeddingFunction / etc. from
-chromadb.utils.embedding_functions if you want a stronger embedding model.
+Uses NeuML/pubmedbert-base-embeddings -- a PubMedBERT-based model fine-tuned
+specifically for medical/biomedical semantic search (768-dim), rather than
+ChromaDB's lightweight general-purpose default (all-MiniLM-L6-v2, 384-dim).
+Requires sentence-transformers + torch (several GB download on first run --
+a deliberate tradeoff for domain-specific embedding quality on anatomical
+terminology; see README).
+
+IMPORTANT: switching embedding models is NOT a config tweak on an existing
+collection -- the vector space is entirely different (different dimensions,
+different model), so old MiniLM-embedded vectors are meaningless to compare
+against new PubMedBERT ones. You must delete/rename the old ./chroma_db and
+re-run this script fresh to fully re-embed everything under the new model.
 
 Usage:
     python load_to_chroma.py --jsonl ./output/chunks.jsonl --chroma_dir ./chroma_db
@@ -16,10 +24,9 @@ import json
 from pathlib import Path
 
 import chromadb
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-DEFAULT_JSONL = PROJECT_ROOT / "dataset" / "output" / "chunks.jsonl"
-DEFAULT_CHROMA_DIR = PROJECT_ROOT / "dataset" / "chroma_db"
+EMBEDDING_MODEL = "NeuML/pubmedbert-base-embeddings"
 
 
 def make_chunk_id(document_id: str, text: str) -> str:
@@ -94,9 +101,11 @@ def load_to_chroma(jsonl_path: str, chroma_dir: str, collection_name: str = "ana
     new_ids = set(chunks_by_id.keys())
 
     client = chromadb.PersistentClient(path=chroma_dir)
+    embedding_fn = SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODEL)
     collection = client.get_or_create_collection(
         name=collection_name,
         metadata={"hnsw:space": "cosine"},
+        embedding_function=embedding_fn,
     )
 
     existing = collection.get(include=[])  # ids only, cheap call
@@ -148,18 +157,20 @@ def load_to_chroma(jsonl_path: str, chroma_dir: str, collection_name: str = "ana
 
 def sanity_query(chroma_dir: str, collection_name: str, query: str, k: int = 3):
     client = chromadb.PersistentClient(path=chroma_dir)
-    collection = client.get_collection(collection_name)
+    embedding_fn = SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODEL)
+    collection = client.get_collection(collection_name, embedding_function=embedding_fn)
     results = collection.query(query_texts=[query], n_results=k)
     print(f"\nQuery: {query!r}")
     for doc, meta, dist in zip(results["documents"][0], results["metadatas"][0], results["distances"][0]):
+        # page_start is already 1-indexed (fixed in ingest.py) -- no +1 here
         print(f"  [dist={dist:.3f}] {meta['chapter']} > {meta['subheading']} (p.{meta['page_start']})")
         print(f"    {doc[:150]}...")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--jsonl", default=str(DEFAULT_JSONL))
-    parser.add_argument("--chroma_dir", default=str(DEFAULT_CHROMA_DIR))
+    parser.add_argument("--jsonl", default="./output/chunks.jsonl")
+    parser.add_argument("--chroma_dir", default="./chroma_db")
     parser.add_argument("--collection", default="anatomy_book")
     parser.add_argument("--document_id", default="anatomy_bd_chaurasia_4thed",
                          help="Must match the --document_id you used in ingest.py, since "

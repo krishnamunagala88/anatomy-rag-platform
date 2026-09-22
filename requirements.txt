@@ -10,6 +10,13 @@ pypdf==5.0.1
 chromadb>=1.0.0
 tiktoken>=0.8.0
 
+# Medical-domain embedding model (NeuML/pubmedbert-base-embeddings) instead
+# of ChromaDB's lightweight default. Requires sentence-transformers + torch
+# -- several GB on first install/download, unlike the small onnx default.
+# Deliberate tradeoff for domain-specific retrieval quality on anatomical
+# terminology. See README's "Medical embedding model" section.
+sentence-transformers
+
 # --- RAGAS evaluation stage ---
 groq==0.37.1
 python-dotenv==1.2.2

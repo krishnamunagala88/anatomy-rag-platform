@@ -20,13 +20,18 @@ import sys
 from pathlib import Path
 
 import chromadb
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+RAGAS_SCRIPT_DIR = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+if str(RAGAS_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(RAGAS_SCRIPT_DIR))
 
 import retrival  # your Groq generation module (generate())
-from ragas.eval_dataset import EVAL_QUESTIONS
+import load_to_chroma
+from eval_dataset import EVAL_QUESTIONS
 
 CHROMA_DIR = str(PROJECT_ROOT / "dataset" / "chroma_db")
 COLLECTION_NAME = "anatomy_book"
@@ -57,7 +62,13 @@ def retrieve(collection, question: str, k: int = 3) -> tuple[list[str], list[dic
 
 def run(out_path: str, k: int = 3):
     client = chromadb.PersistentClient(path=CHROMA_DIR)
-    collection = client.get_collection(COLLECTION_NAME)
+    embedding_fn = SentenceTransformerEmbeddingFunction(
+        model_name=load_to_chroma.EMBEDDING_MODEL
+    )
+    collection = client.get_collection(
+        COLLECTION_NAME,
+        embedding_function=embedding_fn,
+    )
 
     records = []
     for i, item in enumerate(EVAL_QUESTIONS, 1):

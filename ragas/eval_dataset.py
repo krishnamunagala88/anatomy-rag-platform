@@ -67,18 +67,7 @@ EVAL_QUESTIONS = [
                       "point of attachment/origin of a structure, as opposed "
                       "to distal, which means farther away."
     },
-    {
-        "question": "What is haemorrhage?",
-        "reference": "Haemorrhage is bleeding, which can be either external "
-                      "(visible, outside the body) or internal (inside body "
-                      "cavities or tissues)."
-    },
-    {
-        "question": "What movements are possible in the trunk?",
-        "reference": "The trunk can perform flexion (bending forward), "
-                      "extension (bending backward), lateral flexion (bending "
-                      "sideways), and rotation."
-    },
+    
     {
         "question": "What does the term 'ulcer' mean in clinical anatomy?",
         "reference": "An ulcer is a localized break or loss of continuity in "
